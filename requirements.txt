@@ -1,0 +1,7 @@
+docker
+python-nmap
+zaproxy
+torch 
+torchvision 
+torchaudio
+transformers
