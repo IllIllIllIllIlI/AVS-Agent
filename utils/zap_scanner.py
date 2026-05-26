@@ -1,6 +1,13 @@
 import zapv2
 import time
 
+"""
+Contains the four scan types used by the agent: spider, ajaxSpider, ascan, and pscan.
+For details on what each scan does, refer to the ZAP documentation:
+  - ZAPv2 Python API: https://github.com/zaproxy/zap-api-python/blob/main/src/zapv2/spider.py#L290
+  - Local ZAP UI (requires Docker container running): http://127.0.0.1:8080/UI/
+"""
+
 zap = zapv2.ZAPv2(proxies={'http': 'http://172.17.0.1:8080', 'https': 'http://172.17.0.1:8080'})
 
 def zap_scan(target_url, scan_type):
@@ -18,9 +25,10 @@ def zap_scan(target_url, scan_type):
         print("Spider finished crawling, waiting for ZAP to process...")
         time.sleep(5)
         
-        print("=== URLS FOUND ===")
-        print("zap.spider.results(spider): ",zap.spider.results(spider))
-        print("=== EoL URLS ===")
+        # Debug prints. (feedback)
+        # print("=== URLS FOUND ===")
+        # print("zap.spider.results(spider): ",zap.spider.results(spider))
+        # print("=== EoL URLS ===")
         
         return zap.alert.alerts()
     

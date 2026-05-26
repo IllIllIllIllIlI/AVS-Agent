@@ -1,5 +1,10 @@
 import nmap
 
+"""
+Nmap port scanner and result parser.
+Extracts only the three fields relevant to the LLM decision — port number, service name, and product — discarding the rest to keep the model input clean and lightweight.
+"""
+
 def nmap_parser(results):
     target_ip = list(results['scan'].keys())
     
