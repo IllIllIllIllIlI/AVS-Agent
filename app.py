@@ -5,12 +5,11 @@ from utils.auth import at_login_required
 import zapv2
 
 """
-This is the main pipeline for the agent and program.
+Main pipeline and agent orchestration.
 
-It requests a target ip, 
-from which a scan of open ports will be done,
-to then be input in the agent that will give back a list of scans to perform with ZAP.
-Finally ZAP will report on what vulnerabilities it found at the target's ports.
+Takes a target IP, performs an Nmap port scan,
+feeds the results to the LLM agent which decides which ZAP scans to run,
+then executes those scans and returns the discovered vulnerabilities.
 """
 
 zap = zapv2.ZAPv2(proxies={'http': 'http://172.17.0.1:8080', 'https': 'http://172.17.0.1:8080'})
