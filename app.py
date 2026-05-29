@@ -1,8 +1,11 @@
-from model.model_config import cyber_exp_model
+import model.model_config
 from utils.nmap_scanner import nmap_scan
 from utils.zap_scanner import zap_scan
 from utils.auth import at_login_required
+from utils.report import report_parser, vulnerability_ranker
 import zapv2
+import gc
+
 
 """
 Main pipeline and agent orchestration.
@@ -41,7 +44,7 @@ def autonomous_vunerability_scanner_agent(target, zap_target):
     """
     
     # Injection of the prompt in the agent.
-    agent_answer = cyber_exp_model(prompt)
+    agent_answer = model.model_config.cyber_exp_model(prompt)
     print(agent_answer)
     
     scans = agent_answer.split(',')
@@ -55,8 +58,17 @@ def autonomous_vunerability_scanner_agent(target, zap_target):
             
         else:
             # Ask confirmation to the agent.
-            cyber_exp_model("Do you confirm there are no scans to perform? If this not the case please regenerate an answer respecting the zap scan nomenclature thank you.")
+            model.model_config.cyber_exp_model("Do you confirm there are no scans to perform? If this not the case please regenerate an answer respecting the zap scan nomenclature thank you.")
     
+    # Freeing of RAM and VRAM
+    del model.model_config
+    free_malloc = gc.collect()
+    
+    if free_malloc is True:
+        print("memory freed; model unloaded")
+    else:
+        print("failure to free memory; model still loaded")
+        
     # Mapping of the ports for the login URL.
     web_ports_found = []
     for p in nmap_input:
@@ -113,4 +125,6 @@ def autonomous_vunerability_scanner_agent(target, zap_target):
 if __name__ == "__main__":
     target = "127.0.0.1" #input("Please enter the targeted addresses: \n") # For personalized use cases
     zap_target = "172.17.0.1"
-    autonomous_vunerability_scanner_agent(target, zap_target)
+    all_alerts = autonomous_vunerability_scanner_agent(target, zap_target)
+    parsed = report_parser(all_alerts)
+    report = vulnerability_ranker(parsed)
